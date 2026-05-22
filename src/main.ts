@@ -6,19 +6,17 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // CORS untuk frontend React
+  // CORS - izinkan semua origin
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: true,
     credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  // Validasi DTO otomatis
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-
-  // Prefix semua route dengan /api
   app.setGlobalPrefix('api');
 
-  // Swagger dokumentasi API
   const config = new DocumentBuilder()
     .setTitle('AgroHire API')
     .setDescription('API Sistem Job Matching Pertanian - Skripsi Joel Alwan Sembiring (2381048)')
