@@ -2,15 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import * as express from 'express';
-
-const server = express();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  const app = await NestFactory.create(AppModule);
 
-  // CORS wildcard
+  // CORS manual middleware - wildcard
   app.use((req: any, res: any, next: any) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,POST,PATCH,PUT,DELETE,OPTIONS');
@@ -31,19 +27,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.init();
-  return server;
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+  console.log(`✅ AgroHire Backend berjalan di: http://localhost:${port}`);
+  console.log(`📖 Swagger Docs: http://localhost:${port}/api/docs`);
 }
-
-// Untuk lokal
-if (process.env.NODE_ENV !== 'production') {
-  bootstrap().then(async () => {
-    const port = process.env.PORT || 3001;
-    server.listen(port, () => {
-      console.log(`✅ AgroHire Backend berjalan di: http://localhost:${port}`);
-      console.log(`📖 Swagger Docs: http://localhost:${port}/api/docs`);
-    });
-  });
-}
-
-export { bootstrap, server };
+bootstrap();
