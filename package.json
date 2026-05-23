@@ -4,6 +4,7 @@
   "description": "Backend API AgroHire - Sistem Job Matching Pertanian",
   "scripts": {
     "build": "nest build",
+    "prestart": "nest build",
     "start": "node dist/main",
     "start:dev": "nest start --watch"
   },
@@ -27,6 +28,7 @@
     "typeorm": "^0.3.17"
   },
   "devDependencies": {
+    "@nestjs/common": "^10.0.0",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@types/bcrypt": "^5.0.0",
