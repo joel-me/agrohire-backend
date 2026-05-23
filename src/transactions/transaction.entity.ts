@@ -31,15 +31,10 @@ export class Transaction {
   @Column({ type: 'decimal', precision: 14, scale: 2 })
   amount: number;
 
-  @Column({ name: 'platform_fee', type: 'decimal', precision: 14, scale: 2, default: 0 })
-  platformFee: number;
-
-  @Column({ name: 'net_amount', type: 'decimal', precision: 14, scale: 2 })
-  netAmount: number;
-
+  // Status alur: pending → work_started → work_completed → payment_pending → paid → done
   @Column({
     type: 'enum',
-    enum: ['pending','escrow_held','work_started','work_completed','farmer_verified','released','disputed','cancelled'],
+    enum: ['pending', 'work_started', 'work_completed', 'payment_pending', 'paid', 'done', 'cancelled'],
     default: 'pending',
   })
   status: string;
@@ -50,11 +45,20 @@ export class Transaction {
   @Column({ name: 'work_end_date', type: 'date', nullable: true })
   workEndDate: string;
 
+  @Column({ name: 'payment_method', nullable: true, length: 100 })
+  paymentMethod: string;
+
+  @Column({ name: 'payment_proof', nullable: true, length: 500 })
+  paymentProof: string;
+
   @Column({ name: 'worker_confirmed_at', type: 'timestamp', nullable: true })
   workerConfirmedAt: Date;
 
   @Column({ name: 'farmer_verified_at', type: 'timestamp', nullable: true })
   farmerVerifiedAt: Date;
+
+  @Column({ name: 'paid_at', type: 'timestamp', nullable: true })
+  paidAt: Date;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
