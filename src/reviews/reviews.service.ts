@@ -16,7 +16,11 @@ export class ReviewsService {
   async create(transactionId: number, reviewerId: number, dto: any) {
     const tx = await this.txRepo.findOne({ where: { id: transactionId } });
     if (!tx) throw new NotFoundException('Transaksi tidak ditemukan');
-    if (tx.status !== 'released') throw new ForbiddenException('Transaksi belum selesai');
+
+    // ✅ Ganti released → done
+    if (!['done', 'paid'].includes(tx.status))
+      throw new ForbiddenException('Transaksi belum selesai');
+
     if (tx.farmerId !== reviewerId && tx.workerId !== reviewerId)
       throw new ForbiddenException('Bukan transaksi Anda');
 
@@ -29,7 +33,7 @@ export class ReviewsService {
 
     // Update avg_rating di profil reviewee
     const reviews = await this.repo.find({ where: { revieweeId } });
-    const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+    const avg = reviews.reduce((sum, r) => sum + Number(r.rating), 0) / reviews.length;
     await this.profileRepo.update({ userId: revieweeId }, {
       avgRating: Math.round(avg * 100) / 100,
       totalJobs: reviews.length,
